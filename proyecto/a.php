@@ -124,17 +124,19 @@
 
         $pdo->exec("
             INSERT INTO productos (nombre, categoria_id, precio, stock) VALUES
-            ('Naranjas', 1, 1.70, 100),
-            ('Limones', 1, 1.10, 80),
-            ('Mandarinas', 1, 2.00, 60),
-            ('Fresas', 2, 3.50, 40),
+            ('Naranjas', 1, 1.70, 120),
+            ('Limones', 1, 1.10, 90),
+            ('Mandarinas', 1, 2.00, 70),
+            ('Fresas', 2, 3.40, 40),
             ('Frambuesas', 2, 4.20, 30),
-            ('Arándanos', 2, 4.00, 25),
-            ('Mango', 3, 2.80, 50),
-            ('Piña', 3, 3.00, 20),
-            ('Papaya', 3, 2.50, 15),
-            ('Maracuyá', 3, 5.00, 10)
+            ('Arándanos', 2, 4.10, 15),
+            ('Mango', 3, 2.70, 50),
+            ('Piña', 3, 3.00, 15),
+            ('Papaya', 3, 2.50, 10),
+            ('Maracuyá', 3, 5.00, 8)
         ");
+
+        //EJERCICIO 3
 
 
     } catch(PDOException $e) {
