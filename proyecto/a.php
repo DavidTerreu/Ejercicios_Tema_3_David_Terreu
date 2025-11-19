@@ -120,7 +120,7 @@
             ('Cítricos', 'Frutas ricas en vitamina C'),
             ('Frutas Rojas', 'Frutas dulces y pequeñas'),
             ('Tropicales', 'Frutas exóticas de clima cálido')
-        "):
+        ");
 
         $pdo->exec("
             INSERT INTO productos (nombre, categoria_id, precio, stock) VALUES
@@ -134,7 +134,7 @@
             ('Piña', 3, 3.00, 20),
             ('Papaya', 3, 2.50, 15),
             ('Maracuyá', 3, 5.00, 10)
-        "):
+        ");
 
 
     } catch(PDOException $e) {
