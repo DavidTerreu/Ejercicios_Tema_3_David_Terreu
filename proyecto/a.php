@@ -115,28 +115,62 @@
 
         //EJERCICIO 2
 
-        $pdo->exec("
-            INSERT INTO categorias (nombre, descripcion) VALUES
-            ('Cítricos', 'Frutas ricas en vitamina C'),
-            ('Frutas Rojas', 'Frutas dulces y pequeñas'),
-            ('Tropicales', 'Frutas exóticas de clima cálido')
-        ");
+        try{
+            $pdo->exec("
+                INSERT INTO categorias (nombre, descripcion) VALUES
+                ('Cítricos', 'Frutas ricas en vitamina C'),
+                ('Frutas Rojas', 'Frutas dulces y pequeñas'),
+                ('Tropicales', 'Frutas exóticas de clima cálido')
+            ");
 
-        $pdo->exec("
-            INSERT INTO productos (nombre, categoria_id, precio, stock) VALUES
-            ('Naranjas', 1, 1.70, 120),
-            ('Limones', 1, 1.10, 90),
-            ('Mandarinas', 1, 2.00, 70),
-            ('Fresas', 2, 3.40, 40),
-            ('Frambuesas', 2, 4.20, 30),
-            ('Arándanos', 2, 4.10, 15),
-            ('Mango', 3, 2.70, 50),
-            ('Piña', 3, 3.00, 15),
-            ('Papaya', 3, 2.50, 10),
-            ('Maracuyá', 3, 5.00, 8)
-        ");
+            $pdo->exec("
+                INSERT INTO productos (nombre, categoria_id, precio, stock) VALUES
+                ('Naranjas', 1, 1.70, 120),
+                ('Limones', 1, 1.10, 90),
+                ('Mandarinas', 1, 2.00, 70),
+                ('Fresas', 2, 3.40, 40),
+                ('Frambuesas', 2, 4.20, 30),
+                ('Arándanos', 2, 4.10, 15),
+                ('Mango', 3, 2.70, 50),
+                ('Piña', 3, 3.00, 15),
+                ('Papaya', 3, 2.50, 10),
+                ('Maracuyá', 3, 5.00, 8)
+            ");
+        } catch (PDOException $e){
+            echo "Error al insertar categorías: " . $e->getMessage() . "<br><br>";
+        }
+
 
         //EJERCICIO 3
+        //a) Obtener todos los productos ordenados por precio (menor a mayor)
+        $consultaProductos = $pdo -> prepare("SELECT * FROM productos ORDER BY precio ASC");
+
+        $consultaProductos -> execute();
+
+        $productos = $consultaProductos -> fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($productos as $producto) {
+            echo $producto['nombre'] . " ";
+        }
+
+        echo "<br><br>";
+        //b) Obtener productos de una categoría específica
+        $categoria = 'Tropicales';
+        $consultaCat = $pdo -> prepare("SELECT p.nombre, c.nombre AS categoria FROM productos p JOIN categorias c ON p.categoria_id = c.id WHERE c.nombre = :categoria");
+        $consultaCat -> bindParam(':categoria', $categoria);
+        $consultaCat -> execute();
+
+        $productosCategoria = $consultaCat -> fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($productosCategoria as $producto) {
+            echo $producto['nombre'] . " ";
+        }
+
+        //c) Obtener productos con stock menor a 20
+
+        //d) Contar cuántos productos hay en total
+
+        //Usa prepared statements con parámetros
 
 
     } catch(PDOException $e) {
