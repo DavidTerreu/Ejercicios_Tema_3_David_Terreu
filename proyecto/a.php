@@ -191,6 +191,20 @@
 
         echo "<br><br>";
 
+        //Ejercicio 4
+
+        $consultaJoin = $pdo -> prepare("SELECT p.nombre AS producto, p.precio, c.nombre AS categoria FROM productos p INNER JOIN categorias c ON p.categoria_id = c.id ORDER BY c.nombre, p.precio");
+        $consultaJoin -> execute();
+
+        $resultadosJoin = $consultaJoin -> fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultadosJoin as $resultado) {
+            echo $resultado['producto'] . " - " . $resultado['precio'] . " - " . $resultado['categoria'] . "<br>";
+        }
+
+        echo "<br><br>";
+
+        //Ejercicio 5
+
 
 
     } catch(PDOException $e) {
