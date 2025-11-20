@@ -267,6 +267,30 @@
         //c) Valide que el stock no sea negativo antes de actualizar las dos anteriores operaciones
         //Hecho arriba
 
+        //Ejercicio 6
+        //Crea un script que elimine productos sin stock (stock = 0). Pero antes, implementa un soft delete añadiendo una columna "eliminado" en la tabla productos.
+        //Luego, modifica tus consultas SELECT para no mostrar productos eliminados.
+        //💡 Usa UPDATE en lugar de DELETE para marcar como eliminado
+        try{
+            $pdo->exec("ALTER TABLE productos ADD COLUMN eliminado TINYINT(1) DEFAULT 0");
+            $eliminaSinStock = $pdo -> prepare("UPDATE productos SET eliminado = 1 WHERE stock = 0");
+            $eliminaSinStock -> execute();
+
+            $mostrarNoEliminados = $pdo -> prepare("SELECT nombre, stock FROM productos WHERE eliminado = 0");
+            $mostrarNoEliminados -> execute();
+            $productosNoEliminados = $mostrarNoEliminados -> fetchAll(PDO::FETCH_ASSOC);
+
+            echo "Productos no eliminados:<br>";
+            foreach ($productosNoEliminados as $producto) {
+                echo $producto['nombre'] . " - Stock: " . $producto['stock'];
+            }
+        } catch (PDOException $e){
+            echo "Error al añadir tablas: " . $e->getMessage() . "<br><br>";
+        }
+
+        echo "<br><br>";
+
+
 
     } catch(PDOException $e) {
         echo "<p class='error'>❌ Error de conexión: " . $e->getMessage() . "</p>";
