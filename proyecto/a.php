@@ -290,6 +290,50 @@
 
         echo "<br><br>";
 
+        //Ejercicio 7
+
+        try {
+            $pdo->beginTransaction();
+            $usuarioId = 1;
+            $productoId = 4;
+            $cantidad = 3;
+
+            // Verificar stock
+            $stmt = $pdo->prepare("SELECT stock, precio FROM productos WHERE id = :productoId FOR UPDATE");
+            $stmt->bindParam(':productoId', $productoId);
+            $stmt->execute();
+            $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($producto['stock'] < $cantidad) {
+                throw new Exception("Stock insuficiente para el producto ID $productoId");
+            }
+
+            // Crear pedido
+            $total = $producto['precio'] * $cantidad;
+            $stmt = $pdo->prepare("INSERT INTO pedidos (usuario_id, total) VALUES (:usuarioId, :total)");
+            $stmt->bindParam(':usuarioId', $usuarioId);
+            $stmt->bindParam(':total', $total);
+            $stmt->execute();
+
+            // Reducir stock
+            $stmt = $pdo->prepare("UPDATE productos SET stock = stock - :cantidad WHERE id = :productoId");
+            $stmt->bindParam(':cantidad', $cantidad);
+            $stmt->bindParam(':productoId', $productoId);
+            $stmt->execute();
+
+            $pdo->commit();
+
+            echo "Pedido creado para el usuario con ID $usuarioId. Total: $total<br><br>";
+
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            echo "Error al crear el pedido: " . $e->getMessage() . "<br><br>";
+        }
+
+        echo "<br><br>";
+
+        //Ejercicio 8
+
+
 
 
     } catch(PDOException $e) {
