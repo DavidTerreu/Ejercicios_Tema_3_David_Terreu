@@ -166,6 +166,8 @@
             echo $producto['nombre'] . " ";
         }
 
+        //sudo docker compose -f "docker-compose-alumnos.yml" up -d
+
         //c) Obtener productos con stock menor a 20
 
         //d) Contar cuántos productos hay en total
