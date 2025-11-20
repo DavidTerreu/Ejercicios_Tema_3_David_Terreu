@@ -204,7 +204,68 @@
         echo "<br><br>";
 
         //Ejercicio 5
+        //a) Aumente el precio de todos los productos de una categoría en un 10%
+        $categoriaAct = 'Cítricos';
+        $aumento = 1.10;
+        $limite = 0;
 
+        $consulta = $pdo -> prepare("SELECT p.stock FROM productos p JOIN categorias c ON p.categoria_id = c.id WHERE c.nombre = :categoria");
+        $consulta -> bindParam(':categoria', $categoriaAct);
+        $consulta -> execute();
+        $listaCat = $consulta -> fetchColumn();
+
+        if ($listaCat >= $limite) {
+            $actualizaPrecio = $pdo -> prepare("UPDATE productos p JOIN categorias c ON p.categoria_id = c.id SET p.precio = p.precio * :aumento WHERE c.nombre = :categoria");
+            $actualizaPrecio -> bindParam(':aumento', $aumento);
+            $actualizaPrecio -> bindParam(':categoria', $categoriaAct);
+            $actualizaPrecio -> execute();
+
+            echo "Los precios actualizados de la categoría" . $categoriaAct . " son: ";
+            echo "<br>";
+            $consultaActualizados = $pdo -> prepare("SELECT p.nombre, p.precio FROM productos p JOIN categorias c ON p.categoria_id = c.id WHERE c.nombre = :categoria");
+            $consultaActualizados -> bindParam(':categoria', $categoriaAct);
+            $consultaActualizados -> execute();
+            $productosActualizados = $consultaActualizados -> fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($productosActualizados as $producto) {
+                echo $producto['nombre'] . " - " . $producto['precio'] . "<br>";
+            }
+        } else {
+            echo "No se puede actualizar el precio de la categoría " . $categoriaAct . " porque no hay productos.";
+        }
+
+        echo "<br><br>";
+
+        //b) Reduzca el stock de un producto específico cuando se realiza una compra
+        $productoCompra = 'Fresas';
+        $cantidadCompra = 5;
+        $limite = 0;
+
+        $consulta2 = $pdo -> prepare("SELECT p.stock FROM productos p JOIN categorias c ON p.categoria_id = c.id WHERE c.nombre = :categoria");
+        $consulta2 -> bindParam(':categoria', $categoriaAct);
+        $consulta2 -> execute();
+        $listaCat2 = $consulta2 -> fetchColumn();
+
+        if ($listaCat2 >= $limite) {
+            $actualizaStock = $pdo -> prepare("UPDATE productos SET stock = stock - :cantidad WHERE nombre = :producto");
+            $actualizaStock -> bindParam(':cantidad', $cantidadCompra);
+            $actualizaStock -> bindParam(':producto', $productoCompra);
+            $actualizaStock -> execute();
+
+            $consultaStockActualizado = $pdo -> prepare("SELECT nombre, stock FROM productos WHERE nombre = :producto");
+            $consultaStockActualizado -> bindParam(':producto', $productoCompra);
+            $consultaStockActualizado -> execute();
+            $productoStockActualizado = $consultaStockActualizado -> fetch(PDO::FETCH_ASSOC);
+
+            echo "Stock actualizado de " . $productoCompra . ": " . $productoStockActualizado['stock'];
+        } else {
+            echo "No se puede actualizar el precio de la categoría " . $categoriaAct . " porque no hay productos.";
+        }
+
+        echo "<br><br>";
+
+        //c) Valide que el stock no sea negativo antes de actualizar las dos anteriores operaciones
+        //Hecho arriba
 
 
     } catch(PDOException $e) {
