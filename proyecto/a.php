@@ -332,8 +332,77 @@
         echo "<br><br>";
 
         //Ejercicio 8
+        //a) Productos más vendidos (he creado una tabla detallesPedido para insertar datos y poder hacer este ejercicio)
 
+        $pdo->exec("
+                CREATE TABLE IF NOT EXISTS detallesPedido (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    pedido_id INT NOT NULL,
+                    producto_id INT NOT NULL,
+                    categoria_id INT NOT NULL,
+                    cantidad INT NOT NULL,
+                    precio_unitario DECIMAL(10, 2) NOT NULL,
+                    FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
+                    FOREIGN KEY (producto_id) REFERENCES productos(id),
+                    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+                )
+            ");
 
+        try{
+            $pdo->exec("
+                INSERT INTO detallesPedido (pedido_id, producto_id, categoria_id, cantidad, precio_unitario) VALUES
+                (1, 4, 2, 3, 3.40),
+                (1, 1, 1, 2, 1.70),
+                (2, 7, 3, 1, 2.70),
+                (2, 2, 1, 4, 1.10),
+                (3, 5, 2, 2, 4.20)
+            ");
+
+        } catch (PDOException $e){
+            echo "Error al insertar: " . $e->getMessage() . "<br><br>";
+        }
+
+        $productoMasVendido = $pdo -> prepare("SELECT producto_id, SUM(cantidad) AS total_vendido FROM detallesPedido GROUP BY producto_id ORDER BY total_vendido DESC LIMIT 1");
+        $productoMasVendido -> execute();
+        $masVendido = $productoMasVendido -> fetch(PDO::FETCH_ASSOC);
+
+        echo "Producto más vendido ID: " . $masVendido['producto_id'] . ": " . $masVendido['total_vendido'];
+
+        echo "<br><br>";
+
+        //b) Ingresos totales por categoría en la tabla detallespedido
+
+        $ingresosCat = $pdo -> prepare("SELECT categoria_id, SUM(cantidad * precio_unitario) AS ingresos_totales FROM detallesPedido GROUP BY categoria_id ORDER BY ingresos_totales DESC");
+        $ingresosCat -> execute();
+        $ingresosCategoria = $ingresosCat -> fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($ingresosCategoria as $ingreso) {
+            echo "Categoría ID: " . $ingreso['categoria_id'] . " - Ingresos: " . $ingreso['ingresos_totales'] . "<br>";
+        }
+
+        echo "<br><br>";
+
+        //c) Productos con bajo stock (< 10 unidades)
+
+        $bajoStock = $pdo -> prepare("SELECT nombre, stock FROM productos WHERE stock < 10 AND eliminado = 0");
+        $bajoStock -> execute();
+        $productosBajoStock = $bajoStock -> fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($productosBajoStock as $producto) {
+            echo "Producto: " . $producto['nombre'] . " - Stock: " . $producto['stock'] . "<br>";
+        }
+
+        echo "<br><br>";
+
+        //d) Usuarios con más compras
+
+        $usuariosMasCompras = $pdo -> prepare("SELECT usuario_id, COUNT(*) AS total_compras FROM pedidos GROUP BY usuario_id ORDER BY total_compras DESC LIMIT 1");
+        $usuariosMasCompras -> execute();
+        $usuarioMC = $usuariosMasCompras -> fetch(PDO::FETCH_ASSOC);
+
+        echo "Usuario con más compras: " . $usuarioMC['usuario_id'] . " - Total compras: " . $usuarioMC['total_compras'] . "<br>";
+
+        echo "<br><br>";
 
 
     } catch(PDOException $e) {
