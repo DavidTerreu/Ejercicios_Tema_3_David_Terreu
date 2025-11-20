@@ -166,13 +166,31 @@
             echo $producto['nombre'] . " ";
         }
 
-        //sudo docker compose -f "docker-compose-alumnos.yml" up -d
+        echo "<br><br>";
 
         //c) Obtener productos con stock menor a 20
+        $stockMAX = 20;
+        $consultaStock = $pdo -> prepare("SELECT nombre, stock FROM productos WHERE stock < :stockLimite");
+        $consultaStock -> bindParam(':stockLimite', $stockMAX);
+        $consultaStock -> execute();
+
+        $productosMenor20 = $consultaStock -> fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($productosMenor20 as $producto) {
+            echo $producto['nombre'] . " (" . $producto['stock'] . ") ";
+        }
+
+        echo "<br><br>";
 
         //d) Contar cuántos productos hay en total
+        $consultaCount = $pdo -> prepare("SELECT COUNT(*) AS total_productos FROM productos");
+        $consultaCount -> execute();
 
-        //Usa prepared statements con parámetros
+        $totalProductos = $consultaCount -> fetch(PDO::FETCH_ASSOC);
+        echo "Total de productos: " . $totalProductos['total_productos'];
+
+        echo "<br><br>";
+
 
 
     } catch(PDOException $e) {
